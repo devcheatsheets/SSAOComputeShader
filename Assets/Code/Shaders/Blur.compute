@@ -1,0 +1,49 @@
+﻿#pragma kernel CSMain
+
+RWTexture2D<float4> Result;
+Texture2D<float4> ssaoInput;
+Texture2D<float4> Src;
+
+float width, height;
+
+bool debug;
+
+int blurKernelSize;
+float blurTexelSizeMultiplier;
+float blurResultDivider;
+
+uint2 transformedTexcoords(float2 texcoords)
+{
+  uint2 result = uint2(
+    uint(texcoords.x * width), uint(texcoords.y * height)
+    );
+  return result;
+}
+
+float blur(uint2 TexCoords)
+{
+    float2 texelSize = blurTexelSizeMultiplier / float2(width, height);
+    float result = 0.0;
+    for (int x = - blurKernelSize; x < blurKernelSize; ++x) 
+    {
+        for (int y = -blurKernelSize; y < blurKernelSize; ++y) 
+        {
+            float2 offset = float2(float(x), float(y)) * texelSize;
+            result += ssaoInput[TexCoords + transformedTexcoords(offset)].r;
+        }
+    }
+    return result / blurResultDivider;
+}
+
+[numthreads(8, 8, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    if(!debug)
+    {
+        Result[id.xy] = Src[id.xy] * blur(id.xy);
+    }
+    else
+    {
+        Result[id.xy] = blur(id.xy);
+    }
+}
