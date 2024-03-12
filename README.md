@@ -56,9 +56,11 @@ The main logic is contained within the script called *SSAOcpu.cs* (Under Assets/
 ---
 
 The SSAOcpu component is attached to the Camera in the Main scene.
+
 ![hierarchy](Documentation/hierarchy.png) 
 
 You can see and change the parameters in Inspector.
+
 ![inspector](Documentation/inspector.png)
 
 **Navigation**
